@@ -5,6 +5,7 @@ import pygame
 
 from .rendering.point import Point
 from .rendering import shape
+from .rendering.text import Text
 
 class Image:
     """
@@ -20,14 +21,9 @@ class Image:
         self.shape = shape
 
     @classmethod
-    def load(cls, path):
-        """
-        Loads and prepares an image from a local file
-        """
-        raw_image = pygame.image.load(path)
-        raw_image.convert_alpha()
-
-        pyrect = raw_image.get_rect()
+    def from_pyimage(cls, pyimage):
+        pyimage.convert_alpha()
+        pyrect = pyimage.get_rect()
 
         rectangle = shape.rectangle(
             Point(pyrect.left, pyrect.top),
@@ -35,8 +31,16 @@ class Image:
         )
         
         return Image(
-            raw_image,
+            pyimage,
             rectangle)
+
+    @classmethod
+    def load(cls, path):
+        """
+        Loads and prepares an image from a local file
+        """
+        raw_image = pygame.image.load(path)
+        return cls.from_pyimage(raw_image)
 
     @classmethod
     def create(cls, shape, color=None):
@@ -64,3 +68,14 @@ class Image:
         alpha[:] = mask * 255
 
         return Image(surface, shape)
+
+    def render(self, screen, camera=None):
+        """
+        Renders the image on screen.
+
+        If `camera` is passed in, it will render relatively to camera's focus.
+        If `camera` is None, the positioning will be absolute (== static)
+        """
+        offset_x, offset_y = (camera.x, camera.y) if camera else (0, 0)
+        rendering_position = (self.shape.x - offset_x, self.shape.y - offset_y)
+        screen.blit(self.raw_image, rendering_position)
