@@ -152,6 +152,24 @@ class Polygon(Shape):
         shift = value - self.y
         self.shift([0, shift])
 
+    @left.setter
+    def left(self, value):
+        value = round(value)
+        shift = value - self.left
+        self.shift([shift, 0])
+
+    @right.setter
+    def right(self, value):
+        value = round(value)
+        shift = value - self.right
+        self.shift([shift, 0])
+
+    @top.setter
+    def top(self, value):
+        value = round(value)
+        shift = value - self.top
+        self.shift([0, shift])
+
     @bottom.setter
     def bottom(self, value):
         value = round(value)
